@@ -1,44 +1,29 @@
 // Ilya Zeldner - Braude College - 2026
+// src/app/auth/callback/route.ts
 import { NextResponse } from "next/server";
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
-
+// This imports the helper we just created in step 1
+import { createClient } from "@/lib/supabase-server";
 export async function GET(request: Request) {
-  // Get the "code" from the URL (the magic link has it)
+  // 1. Get the current URL and the 'code' parameter from it
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
 
-  // If we have a code, we want to exchange it for a session cookie
   if (code) {
-    const cookieStore = await cookies();
+    // 2. Create the Supabase client using our new Server Helper
+    // (This automatically handles the cookies for us)
+    const supabase = await createClient();
 
-    // Create the Supabase client just for this moment
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll();
-          },
-          setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            );
-          },
-        },
-      }
-    );
-
-    // The Exchange: Give Code -> Get Session
+    // 3. Exchange the temporary "Email Code" for a permanent "Session Cookie"
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
-    // If successful, send them to the Admin page (or Home)
     if (!error) {
+      // 4. Success! The user is logged in. Send them to the Dashboard.
+      // We use 'origin' to make sure we go to the right domain (Localhost or Vercel)
       return NextResponse.redirect(`${origin}/admin`);
     }
   }
 
-  // If something went wrong, send them back to login
+  // 5. Failure! If there was no code, or the code was expired/bad.
+  // Send them back to Login with an error message so our Red Box can show it.
   return NextResponse.redirect(`${origin}/login?error=auth-code-error`);
 }

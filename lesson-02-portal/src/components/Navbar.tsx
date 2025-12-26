@@ -2,17 +2,13 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { createBrowserClient } from "@supabase/ssr";
-
+import { useSupabase } from "@/hooks/useSupabase";
 export default function Navbar() {
-  const pathname = usePathname();
-  const router = useRouter();
+  const pathname = usePathname(); // Get the current path
+  const router = useRouter(); // For navigation after logout
 
+  const supabase = useSupabase(); // Get Supabase client
   const handleLogout = async () => {
-    const supabase = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
     await supabase.auth.signOut();
     router.refresh();
     router.push("/");

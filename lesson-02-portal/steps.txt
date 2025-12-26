@@ -48,15 +48,20 @@ The Login Page (app/login/page.tsx)
 The Admin Page (app/admin/page.tsx)
     This page is protected.  We will fetch data from the NEW table (grades) here.
 
+The Grade Page (app/admin/grade/page.tsx)
+The Upload new Grade (app/admin/upload_new-grade/page.tsx)
+
 The Public Home Page (app/page.tsx)
     Simple links to navigate.
+
+The Login page (app/login/page.tsx) 
 
 The Callback Route (app/auth/callback/route.ts)
 
 The Navbar Component (src/component/Navbar.tsx)
     Add the Navbar to the  layout.tsx (src/app/layout.tsx) 
-
-
+The supabase-server (lib/supabase-server.ts) for server 
+The supabase-client (hooks/useSupabase.ts) for client
 Part 1: The Cookie 
     ​A Cookie is simply a tiny text file that the server gives to the browser. The browser promises to keep it and show it every time it comes back to the website.
     ​1. How is it Created?

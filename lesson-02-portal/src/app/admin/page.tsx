@@ -1,51 +1,86 @@
 // Ilya Zeldner - 2026 Web Development - Braude College
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import { createClient } from "@/lib/supabase-server";
+import { redirect } from "next/navigation";
+import Link from "next/link";
 
-export default async function AdminPage() {
-  // Setup Server Client (for reading data securely)
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-      },
-    }
-  );
+export default async function AdminDashboard() {
+  const supabase = await createClient();
 
-  // Get the User
+  // Check User (Security)
   const {
     data: { user },
+    error: authError,
   } = await supabase.auth.getUser();
+  if (authError || !user) {
+    redirect("/login");
+  }
 
-  // Fetch the Grades
-  const { data: grades } = await supabase.from("grades").select("*");
+  // GET REAL DATA: Count how many rows are in the 'grades' table
+  // 'count: exact' tells Supabase to just count them, not download all 1000 rows (opt fast!)
+  const { count: gradesCount } = await supabase
+    .from("grades")
+    .select("*", { count: "exact", head: true });
+
+  // Handle database errors (e.g., if table is empty)
+  const safeCount = gradesCount || 0;
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white p-10">
-      <h1 className="text-3xl font-bold text-green-400 mb-2">
-        Admin Dashboard
-      </h1>
-      <p className="text-slate-400 mb-8">Logged in as: {user?.email}</p>
+    <div className="min-h-screen bg-slate-50 p-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200 mb-8">
+          <h1 className="text-3xl font-bold text-slate-800 mb-2">
+            Admin Dashboard
+          </h1>
+          <p className="text-slate-500">
+            Logged in as:{" "}
+            <span className="font-mono text-blue-600 bg-blue-50 px-2 py-1 rounded">
+              {user.email}
+            </span>
+          </p>
+        </div>
 
-      <div className="bg-slate-800 p-6 rounded-lg border border-slate-700">
-        <h2 className="text-xl font-bold mb-4">Student Grades (Secure Data)</h2>
-        <div className="space-y-2">
-          {grades?.map((item) => (
-            <div
-              key={item.id}
-              className="flex justify-between border-b border-slate-700 pb-2"
-            >
-              <span>{item.student_email}</span>
-              <span className="font-mono text-yellow-400">
-                {item.score} / 100
-              </span>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* DATA*/}
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+            <h2 className="text-xl font-bold text-slate-800 mb-4">
+              Database Stats
+            </h2>
+            <div className="text-slate-600 space-y-2">
+              <p className="flex justify-between">
+                <span>Total Grades/Rows:</span>
+                <span className="font-bold text-blue-600 text-xl">
+                  {safeCount}
+                </span>
+              </p>
+              <p className="text-xs text-gray-400 mt-2">
+                * This data comes directly from Supabase
+              </p>
             </div>
-          ))}
+          </div>
+
+          {/* LINKS  */}
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+            <h2 className="text-xl font-bold text-slate-800 mb-4">
+              Quick Actions
+            </h2>
+
+            {/* Link 1: View Grades */}
+            <Link
+              href="/admin/grades"
+              className="block w-full bg-slate-900 text-white text-center px-4 py-3 rounded hover:bg-slate-700 transition mb-3"
+            >
+              View Full Grade Table
+            </Link>
+
+            {/* Link 2: Upload New Grade */}
+            <Link
+              href="/admin/upload_new_grade"
+              className="block w-full border border-slate-300 text-slate-700 text-center px-4 py-3 rounded hover:bg-slate-50 transition"
+            >
+              Upload New Grade
+            </Link>
+          </div>
         </div>
       </div>
     </div>
