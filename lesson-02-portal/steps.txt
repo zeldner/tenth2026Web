@@ -1,0 +1,59 @@
+npx create-next-app@latest lesson-02-portal
+    Select these options:
+    TypeScript: Yes
+    ESLint: Yes
+    Tailwind CSS: Yes
+    src/ directory: No
+    App Router: Yes (Crucial)
+
+Install Supabase & The Cookie Helper We need supabase-js for the database and ssr (Server Side Rendering) to help the Middleware read cookies
+
+npm install @supabase/supabase-js @supabase/ssr
+
+We will use the same Supabase project, but we will treat the old tables (traffic, Waitlist2026) as "Do Not Touch."
+
+Go to Supabase Dashboard -> SQL Editor. 2. Run this command to create a NEW table for this lesson:
+
+    -- Create a new table just for Lesson 2
+    create table "grades" (
+    id bigint primary key generated always as identity,
+    student_email text,
+    course_name text,
+    score int
+    );
+
+    -- Add some dummy data so we have something to see
+    insert into "grades" (student_email, course_name, score)
+    values 
+    ('student@braude.ac.il', 'Software Engineering', 95),
+    ('test@gmail.com', 'Algorithms', 88);
+
+Create .env.local 
+    In the root folder, create this file and paste your keys (same keys as last time).
+
+        NEXT_PUBLIC_SUPABASE_URL=your_project_url_here
+        NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
+
+Create the Connection File Create a folder lib and a file lib/supabase.ts. This is a slightly upgraded version that handles cookies (needed for Middleware).
+
+The Guard (Middleware) (src/middleware.ts)
+
+Create a file named middleware.ts in the root of the project (next to package.json).
+
+The Login Page (app/login/page.tsx)
+    What is a "Magic Link"?
+    ​A Magic Link is a Passwordless Login.
+    Instead of the user having to remember a secret password (like 123!), the system sends a special, one-time URL to their email. When they click that link, the website says: "Ah, since you have access to this email inbox, you must be the real owner. Welcome!"
+
+The Admin Page (app/admin/page.tsx)
+    This page is protected.  We will fetch data from the NEW table (grades) here.
+
+The Public Home Page (app/page.tsx)
+    Simple links to navigate.
+
+The Callback Route (app/auth/callback/route.ts)
+
+The Navbar Component (src/component/Navbar.tsx)
+    Add the Navbar to the  layout.tsx (src/app/layout.tsx) 
+
+
