@@ -25,9 +25,6 @@ export default function Navbar() {
 
   return (
     <nav className="bg-slate-900 text-white p-4 border-b border-slate-800 sticky top-0 z-50">
-      {/* CHANGE 1: flex-col (Mobile: Stack vertical) -> md:flex-row (Desktop: Row horizontal) 
-          CHANGE 2: gap-4 (Add space between stacked items)
-      */}
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
         {/* LOGO */}
         <Link
