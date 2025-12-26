@@ -34,7 +34,7 @@ export default async function GradesPage() {
         </div>
 
         {/* THE TABLE */}
-        <div className="bg-white rounded-lg shadow overflow-hidden border border-slate-200">
+        <div className="bg-white rounded-lg shadow overflow-x-auto border border-slate-200">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-100 border-b border-slate-200 text-slate-600 text-sm uppercase tracking-wider">
