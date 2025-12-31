@@ -1,3 +1,5 @@
+Ilya Zeldner : steps ex10
+
 npx create-next-app@latest lesson-02-portal
     Select these options:
     TypeScript: Yes
@@ -9,6 +11,8 @@ npx create-next-app@latest lesson-02-portal
 Install Supabase & The Cookie Helper We need supabase-js for the database and ssr (Server Side Rendering) to help the Middleware read cookies
 
 npm install @supabase/supabase-js @supabase/ssr
+
+Ctrl + Shift + P : TypeScript: Restart TS 
 
 We will use the same Supabase project, but we will treat the old tables (traffic, Waitlist2026) as "Do Not Touch."
 
@@ -112,4 +116,14 @@ Part 1: The Cookie
     ​Scroll down to Request Headers. We will see a line saying Cookie: sb-access-token=....
     ​This proves our browser is sending the secret key to the server.
 
+
+in supabase : Authentication -> URL Configuration -> Redirect URLs : 
+add : 
+Add URL
+
+http://localhost:3000/auth/callback
+
+https://[your project name in vercel].vercel.app/auth/callback 
+    for example : 
+        https://tenth2026-web.vercel.app/auth/callback
 

@@ -6,7 +6,7 @@ export async function middleware(request: NextRequest) {
   // Setup the response
   const response = NextResponse.next({
     request: { headers: request.headers },
-  });
+  }); // Pass headers to the response
 
   // check if the user is logged in
   const supabase = createServerClient(
@@ -14,8 +14,8 @@ export async function middleware(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        getAll() {
-          return request.cookies.getAll();
+        getAll() { // This allows Supabase to read the "Login Cookie"
+          return request.cookies.getAll(); // Read all cookies from the request
         },
         setAll(cookiesToSet) {
           // This allows Supabase to set the "Login Cookie"

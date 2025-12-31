@@ -18,7 +18,7 @@ function LoginForm() {
     const error = searchParams.get("error");
     if (error === "auth-code-error" && !errorMessage) {
       setErrorMessage("Link expired or already used. Please try again.");
-    }
+    } 
   }, [searchParams, errorMessage]); // Add errorMessage to the list
 
   const handleLogin = async () => {
@@ -30,7 +30,8 @@ function LoginForm() {
     const { error } = await supabase.auth.signInWithOtp({
       email: email,
       options: { emailRedirectTo: `${location.origin}/auth/callback` },
-    });
+    }); // Send magic link
+    // Handle the result
 
     if (error) {
       setStatus("Idle");
