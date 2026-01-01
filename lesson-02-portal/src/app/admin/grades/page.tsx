@@ -1,3 +1,4 @@
+// Ilya Zeldner - Braude College - 2026
 import { createClient } from "@/lib/supabase-server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -5,7 +6,7 @@ import { redirect } from "next/navigation";
 export default async function GradesPage() {
   const supabase = await createClient();
 
-  // 1. Security Check
+  // Security Check
   const {
     data: { user },
   } = await supabase.auth.getUser();
