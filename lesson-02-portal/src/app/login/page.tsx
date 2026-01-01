@@ -18,7 +18,7 @@ function LoginForm() {
     const error = searchParams.get("error");
     if (error === "auth-code-error" && !errorMessage) {
       setErrorMessage("Link expired or already used. Please try again.");
-    } 
+    }
   }, [searchParams, errorMessage]); // Add errorMessage to the list
 
   const handleLogin = async () => {
@@ -45,9 +45,7 @@ function LoginForm() {
     <div className="min-h-screen flex items-center justify-center bg-slate-900 p-4">
       {/* w-full max-w-md ensures it fits on phones */}
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md mx-auto">
-        <h1 className="text-2xl font-bold mb-4 text-slate-900">
-          Student Login
-        </h1>
+        <h1 className="text-2xl font-bold mb-4 text-slate-900">User Login</h1>
 
         {/* ERROR BOX: Shows if something is wrong */}
         {errorMessage && (
@@ -62,7 +60,7 @@ function LoginForm() {
           </label>
           <input
             className="w-full border border-gray-300 p-2 rounded text-black"
-            placeholder="student@braude.ac.il"
+            placeholder="user@braude.ac.il"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />

@@ -1,87 +1,86 @@
-// Ilya Zeldner - 2026 Web Development - Braude College
-import { createClient } from "@/lib/supabase-server";
+// Ilya Zeldner - Braude College - 2026
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import Link from "next/link";
 
 export default async function AdminDashboard() {
-  const supabase = await createClient();
+  const cookieStore = await cookies(); // Get the cookies object
 
-  // Check User (Security)
+  const supabase = createServerClient(
+    // Create Supabase Client
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll(); // Read all cookies from the request
+        },
+        setAll(cookiesToSet) {
+          // This allows Supabase to set the "Login Cookie"
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            ); // Set cookies on the request
+          } catch {
+            // The setAll method was called from a Server Component.
+            // This can be ignored if we have middleware refreshing
+            // user sessions.
+          }
+        },
+      },
+    }
+  );
+
+  // Get the current User
   const {
     data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-  if (authError || !user) {
-    redirect("/login");
+  } = await supabase.auth.getUser(); // Fetch current user
+
+  if (!user) {
+    redirect("/login"); // If no user, redirect to login
   }
 
-  // GET REAL DATA: Count how many rows are in the 'grades' table
-  // 'count: exact' tells Supabase to just count them, not download all 1000 rows (opt fast!)
-  const { count: gradesCount } = await supabase
-    .from("grades")
-    .select("*", { count: "exact", head: true });
-
-  // Handle database errors (e.g., if table is empty)
-  const safeCount = gradesCount || 0;
+  // Format the Date
+  const rawDate = user.last_sign_in_at; // Raw last sign-in date
+  const formattedDate = rawDate
+    ? new Date(rawDate).toLocaleString("en-GB", {
+        timeZone: "Asia/Jerusalem",
+        hour12: false, // 24-hour format
+        year: "numeric", // Full year
+        day: "2-digit", // 2-digit day
+        month: "2-digit", // 2-digit month
+        hour: "2-digit", // 2-digit hour
+        minute: "2-digit", // 2-digit minute
+      })
+    : "First login"; // Fallback for first login
 
   return (
-    <div className="min-h-screen bg-slate-50 p-8">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200 mb-8">
-          <h1 className="text-3xl font-bold text-slate-800 mb-2">
-            Admin Dashboard
-          </h1>
-          <p className="text-slate-500">
-            Logged in as:{" "}
-            <span className="font-mono text-blue-600 bg-blue-50 px-2 py-1 rounded">
-              {user.email}
-            </span>
+    <div className="p-8">
+      <h1 className="text-3xl font-bold mb-4">Admin Dashboard 🛠️</h1>
+
+      <div className="bg-white shadow-md rounded-lg p-6 max-w-md">
+        <h2 className="text-xl font-semibold mb-2">Session Info</h2>
+        <div className="text-slate-600">
+          <p className="font-medium">Last Login:</p>
+          <p className="text-2xl font-mono text-blue-600 mt-1">
+            {formattedDate} 📅
           </p>
         </div>
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* DATA*/}
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
-            <h2 className="text-xl font-bold text-slate-800 mb-4">
-              Database Stats
-            </h2>
-            <div className="text-slate-600 space-y-2">
-              <p className="flex justify-between">
-                <span>Total Grades/Rows:</span>
-                <span className="font-bold text-blue-600 text-xl">
-                  {safeCount}
-                </span>
-              </p>
-              <p className="text-xs text-gray-400 mt-2">
-                * This data comes directly from Supabase
-              </p>
-            </div>
-          </div>
-
-          {/* LINKS  */}
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
-            <h2 className="text-xl font-bold text-slate-800 mb-4">
-              Quick Actions
-            </h2>
-
-            {/* Link 1: View Grades */}
-            <Link
-              href="/admin/grades"
-              className="block w-full bg-slate-900 text-white text-center px-4 py-3 rounded hover:bg-slate-700 transition mb-3"
-            >
-              View Full Grade Table
-            </Link>
-
-            {/* Link 2: Upload New Grade */}
-            <Link
-              href="/admin/upload_new_grade"
-              className="block w-full border border-slate-300 text-slate-700 text-center px-4 py-3 rounded hover:bg-slate-50 transition"
-            >
-              Upload New Grade
-            </Link>
-          </div>
-        </div>
+      <div className="mt-8 flex gap-4">
+        <a
+          href="/admin/grades"
+          className="bg-slate-800 text-white px-4 py-2 rounded hover:bg-slate-700"
+        >
+          View Grades 📊
+        </a>
+        <a
+          href="/admin/upload_new_grade"
+          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+        >
+          Upload Grade 📝
+        </a>
       </div>
     </div>
   );

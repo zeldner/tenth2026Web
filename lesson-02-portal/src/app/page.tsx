@@ -12,7 +12,7 @@ export default function Home() {
           href="/login"
           className="px-6 py-3 bg-slate-200 rounded-lg font-bold hover:bg-slate-300"
         >
-          Student Login
+          User Login
         </Link>
         <Link
           href="/admin"

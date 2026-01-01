@@ -5,7 +5,7 @@ npx create-next-app@latest lesson-02-portal
     TypeScript: Yes
     ESLint: Yes
     Tailwind CSS: Yes
-    src/ directory: No
+    src/ directory: Yes
     App Router: Yes (Crucial)
 
 Install Supabase & The Cookie Helper We need supabase-js for the database and ssr (Server Side Rendering) to help the Middleware read cookies

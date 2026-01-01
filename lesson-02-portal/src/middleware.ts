@@ -5,7 +5,8 @@ import { createServerClient } from "@supabase/ssr";
 export async function middleware(request: NextRequest) {
   // Setup the response
   const response = NextResponse.next({
-    request: { headers: request.headers },
+    // Create a NextResponse
+    request: { headers: request.headers }, // Forward request headers
   }); // Pass headers to the response
 
   // check if the user is logged in
@@ -14,21 +15,22 @@ export async function middleware(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        getAll() { // This allows Supabase to read the "Login Cookie"
+        getAll() {
+          // This allows Supabase to read the "Login Cookie"
           return request.cookies.getAll(); // Read all cookies from the request
         },
         setAll(cookiesToSet) {
           // This allows Supabase to set the "Login Cookie"
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
+          cookiesToSet.forEach( 
+            ({ name, value }) => request.cookies.set(name, value) // Set cookies on the request
           );
           cookiesToSet.forEach(({ name, value, options }) =>
             response.cookies.set(name, value, options)
-          );
+          ); // Set cookies on the response
         },
       },
-    }
-  );
+    } // Pass in the cookie functions
+  ); // Create Supabase Client
 
   const {
     data: { user },
