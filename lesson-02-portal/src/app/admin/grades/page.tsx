@@ -13,7 +13,7 @@ export default async function GradesPage() {
     redirect("/login");
   }
 
-  // 2. Fetch Data (Using YOUR column names)
+  // Fetch Data )Using column names)
   const { data: grades } = await supabase
     .from("grades")
     .select("*")
@@ -54,7 +54,7 @@ export default async function GradesPage() {
 
               {grades?.map((row) => (
                 <tr key={row.id} className="hover:bg-blue-50 transition">
-                  {/* CORRECT MAPPING: Using your DB column names */}
+                  {/* CORRECT MAPPING: Using  DB column names */}
                   <td className="p-4 text-slate-900 font-medium">
                     {row.student_email}
                   </td>
